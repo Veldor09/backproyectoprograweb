@@ -1,0 +1,75 @@
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateLeadDto } from './dto/create-lead.dto';
+import { UpdateLeadDto } from './dto/update-lead.dto';
+export declare class LeadsService {
+    private prisma;
+    constructor(prisma: PrismaService);
+    create(dto: CreateLeadDto): import("@prisma/client").Prisma.Prisma__LeadClient<{
+        id: number;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        phone: string;
+        goal: string;
+        message: string | null;
+        status: import("@prisma/client").$Enums.LeadStatus;
+        notes: string | null;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    findAll(status?: string): import("@prisma/client").Prisma.PrismaPromise<{
+        id: number;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        phone: string;
+        goal: string;
+        message: string | null;
+        status: import("@prisma/client").$Enums.LeadStatus;
+        notes: string | null;
+    }[]>;
+    findOne(id: number): import("@prisma/client").Prisma.Prisma__LeadClient<{
+        id: number;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        phone: string;
+        goal: string;
+        message: string | null;
+        status: import("@prisma/client").$Enums.LeadStatus;
+        notes: string | null;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    update(id: number, dto: UpdateLeadDto): import("@prisma/client").Prisma.Prisma__LeadClient<{
+        id: number;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        phone: string;
+        goal: string;
+        message: string | null;
+        status: import("@prisma/client").$Enums.LeadStatus;
+        notes: string | null;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    remove(id: number): import("@prisma/client").Prisma.Prisma__LeadClient<{
+        id: number;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        phone: string;
+        goal: string;
+        message: string | null;
+        status: import("@prisma/client").$Enums.LeadStatus;
+        notes: string | null;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    stats(): Promise<{
+        total: number;
+        byStatus: (import("@prisma/client").Prisma.PickEnumerable<import("@prisma/client").Prisma.LeadGroupByOutputType, "status"[]> & {
+            _count: {
+                id: number;
+            };
+        })[];
+        byGoal: (import("@prisma/client").Prisma.PickEnumerable<import("@prisma/client").Prisma.LeadGroupByOutputType, "goal"[]> & {
+            _count: {
+                id: number;
+            };
+        })[];
+    }>;
+}

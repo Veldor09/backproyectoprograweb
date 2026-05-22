@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lead {
+  id        Int        @id @default(autoincrement())
+  name      String
+  phone     String
+  goal      String
+  message   String?
+  status    LeadStatus @default(NUEVO)
+  notes     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+enum LeadStatus {
+  NUEVO
+  CONTACTADO
+  EN_PROCESO
+  CONVERTIDO
+  PERDIDO
+}
+
+model ClassSchedule {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  instructor  String
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  capacity    Int       @default(20)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  bookings    Booking[]
+}
+
+model Booking {
+  id              Int           @id @default(autoincrement())
+  name            String
+  phone           String
+  email           String?
+  classScheduleId Int
+  classSchedule   ClassSchedule @relation(fields: [classScheduleId], references: [id])
+  userId          Int?
+  user            User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  status          BookingStatus @default(PENDIENTE)
+  createdAt       DateTime      @default(now())
+
+  @@unique([phone, classScheduleId])
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  phone        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  bookings     Booking[]
+}
+
+enum BookingStatus {
+  PENDIENTE
+  CONFIRMADO
+  CANCELADO
+}
