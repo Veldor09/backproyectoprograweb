@@ -1,0 +1,54 @@
+# ─────────────────────────────────────────────────────────────
+# Render Blueprint — Backend NestJS + PostgreSQL
+# Este archivo va en la RAÍZ del repo del backend.
+# Despliega con: New > Blueprint  apuntando a ese repo.
+# El frontend se despliega por separado en Vercel.
+# ─────────────────────────────────────────────────────────────
+databases:
+  - name: forceextreme-db
+    databaseName: forceextreme
+    user: forceextreme
+    plan: free
+
+services:
+  - type: web
+    name: forceextreme-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
+    healthCheckPath: /api/health
+    envVars:
+      # La DB se conecta automáticamente desde el servicio de arriba
+      - key: DATABASE_URL
+        fromDatabase:
+          name: forceextreme-db
+          property: connectionString
+      # JWT_SECRET se genera automáticamente (seguro, no lo pongas a mano)
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "4000"
+      # URL del frontend en Vercel — configúrala en el dashboard tras el deploy
+      - key: FRONTEND_URL
+        sync: false
+      - key: SWAGGER_ENABLED
+        value: "true"
+      # ── Email SMTP (Gmail) — configura estos en el dashboard, no aquí ──────
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
