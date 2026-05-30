@@ -6,6 +6,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 interface JwtPayload {
   sub: number;
   email: string;
+  role?: string;
 }
 
 @Injectable()

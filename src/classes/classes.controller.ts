@@ -15,6 +15,8 @@ import { Throttle } from '@nestjs/throttler';
 import { ClassesService } from './classes.service';
 import { CreateClassDto } from './dto/create-class.dto';
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { CreateWaitlistDto } from './dto/create-waitlist.dto';
+import { TransferBookingDto } from './dto/transfer-booking.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { OptionalUserJwtGuard } from '../users/guards/optional-user-jwt.guard';
 
@@ -76,6 +78,47 @@ export class ClassesController {
   @Patch('bookings/:id/confirm')
   confirmBooking(@Param('id', ParseIntPipe) id: number) {
     return this.classesService.confirmBooking(id);
+  }
+
+  // ── Cambio de clase ───────────────────────────────────────────────────────
+  // Accesible por el usuario dueño de la reserva o por un admin
+  @UseGuards(OptionalUserJwtGuard)
+  @Patch('bookings/:id/transfer')
+  transferBooking(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: TransferBookingDto,
+  ) {
+    return this.classesService.transferBooking(id, dto.newClassScheduleId);
+  }
+
+  // ── Check-in ──────────────────────────────────────────────────────────────
+  @UseGuards(JwtAuthGuard)
+  @Patch('bookings/:id/attendance')
+  markAttendance(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('attended') attended: boolean,
+  ) {
+    return this.classesService.markAttendance(id, attended);
+  }
+
+  // ── Lista de espera ────────────────────────────────────────────────────────
+  @Throttle({ default: { ttl: 60_000, limit: 5 } })
+  @UseGuards(OptionalUserJwtGuard)
+  @Post('waitlist')
+  joinWaitlist(@Body() dto: CreateWaitlistDto) {
+    return this.classesService.joinWaitlist(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('waitlist/all')
+  findWaitlist(@Query('classId') classId?: string) {
+    return this.classesService.findWaitlist(classId ? Number(classId) : undefined);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('waitlist/:id/remove')
+  removeFromWaitlist(@Param('id', ParseIntPipe) id: number) {
+    return this.classesService.removeFromWaitlist(id);
   }
 
   @UseGuards(JwtAuthGuard)

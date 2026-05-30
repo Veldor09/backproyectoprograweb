@@ -8,12 +8,19 @@ datasource db {
 }
 
 model Admin {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
   password  String
   name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      AdminRole @default(ADMIN)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  TRAINER
 }
 
 model Lead {
@@ -36,19 +43,33 @@ enum LeadStatus {
   PERDIDO
 }
 
+model Instructor {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  bio        String?
+  specialty  String?
+  photoUrl   String?
+  order      Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
 model ClassSchedule {
-  id          Int       @id @default(autoincrement())
-  name        String
-  description String?
-  instructor  String
-  dayOfWeek   Int
-  startTime   String
-  endTime     String
-  capacity    Int       @default(20)
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  bookings    Booking[]
+  id             Int            @id @default(autoincrement())
+  name           String
+  description    String?
+  instructor     String
+  dayOfWeek      Int
+  startTime      String
+  endTime        String
+  capacity       Int            @default(20)
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  bookings        Booking[]
+  waitlistEntries WaitlistEntry[]
+  reviews         ClassReview[]
 }
 
 model Booking {
@@ -61,24 +82,113 @@ model Booking {
   userId          Int?
   user            User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
   status          BookingStatus @default(PENDIENTE)
+  attended        Boolean?
   createdAt       DateTime      @default(now())
+  review          ClassReview?
+
+  @@unique([phone, classScheduleId])
+}
+
+model WaitlistEntry {
+  id              Int             @id @default(autoincrement())
+  name            String
+  phone           String
+  email           String?
+  classScheduleId Int
+  classSchedule   ClassSchedule   @relation(fields: [classScheduleId], references: [id])
+  status          WaitlistStatus  @default(ESPERANDO)
+  notifiedAt      DateTime?
+  createdAt       DateTime        @default(now())
 
   @@unique([phone, classScheduleId])
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  name         String
-  email        String    @unique
-  phone        String    @unique
-  passwordHash String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  bookings     Booking[]
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  email               String               @unique
+  phone               String               @unique
+  passwordHash        String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  bookings            Booking[]
+  passwordResetTokens PasswordResetToken[]
+  membership          Membership?
+  reviews             ClassReview[]
+  progress            UserProgress[]
+}
+
+model UserProgress {
+  id        Int              @id @default(autoincrement())
+  userId    Int
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime         @default(now())
+  category  ProgressCategory @default(GENERAL)
+  weight    Float?           // kg, opcional
+  reps      Int?             // repeticiones, opcional
+  notes     String?
+  createdAt DateTime         @default(now())
+}
+
+enum ProgressCategory {
+  FUERZA
+  CARDIO
+  PESO
+  GENERAL
+}
+
+model Membership {
+  id        Int              @id @default(autoincrement())
+  userId    Int              @unique
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan      MembershipPlan
+  startDate DateTime         @default(now())
+  endDate   DateTime
+  isActive  Boolean          @default(true)
+  notes     String?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+enum MembershipPlan {
+  BASICO
+  PRO
+  PREMIUM
+}
+
+model ClassReview {
+  id              Int      @id @default(autoincrement())
+  bookingId       Int      @unique
+  classScheduleId Int
+  userId          Int?
+  rating          Int      // 1-5
+  comment         String?
+  createdAt       DateTime @default(now())
+
+  booking       Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  classSchedule ClassSchedule @relation(fields: [classScheduleId], references: [id], onDelete: Cascade)
+  user          User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model PasswordResetToken {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 }
 
 enum BookingStatus {
   PENDIENTE
   CONFIRMADO
   CANCELADO
+}
+
+enum WaitlistStatus {
+  ESPERANDO
+  NOTIFICADO
+  CONVERTIDO
+  EXPIRADO
 }

@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UserJwtStrategy } from './strategies/user-jwt.strategy';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { UserJwtStrategy } from './strategies/user-jwt.strategy';
       secret: process.env.JWT_SECRET ?? 'fallback-secret',
       signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN ?? '7d') as any },
     }),
+    EmailModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, UserJwtStrategy],

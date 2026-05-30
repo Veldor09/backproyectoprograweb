@@ -13,6 +13,7 @@ const passport_1 = require("@nestjs/passport");
 const users_controller_1 = require("./users.controller");
 const users_service_1 = require("./users.service");
 const user_jwt_strategy_1 = require("./strategies/user-jwt.strategy");
+const email_module_1 = require("../email/email.module");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;
@@ -24,6 +25,7 @@ exports.UsersModule = UsersModule = __decorate([
                 secret: process.env.JWT_SECRET ?? 'fallback-secret',
                 signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN ?? '7d') },
             }),
+            email_module_1.EmailModule,
         ],
         controllers: [users_controller_1.UsersController],
         providers: [users_service_1.UsersService, user_jwt_strategy_1.UserJwtStrategy],

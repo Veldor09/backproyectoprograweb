@@ -10,12 +10,19 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const throttler_1 = require("@nestjs/throttler");
+const schedule_1 = require("@nestjs/schedule");
 const core_1 = require("@nestjs/core");
 const prisma_module_1 = require("./prisma/prisma.module");
 const auth_module_1 = require("./auth/auth.module");
 const leads_module_1 = require("./leads/leads.module");
 const classes_module_1 = require("./classes/classes.module");
 const users_module_1 = require("./users/users.module");
+const instructors_module_1 = require("./instructors/instructors.module");
+const memberships_module_1 = require("./memberships/memberships.module");
+const reviews_module_1 = require("./reviews/reviews.module");
+const reminders_module_1 = require("./reminders/reminders.module");
+const app_controller_1 = require("./app.controller");
+const app_service_1 = require("./app.service");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -23,14 +30,20 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({ isGlobal: true }),
+            schedule_1.ScheduleModule.forRoot(),
             throttler_1.ThrottlerModule.forRoot([{ ttl: 60_000, limit: 30 }]),
             prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
             leads_module_1.LeadsModule,
             classes_module_1.ClassesModule,
             users_module_1.UsersModule,
+            instructors_module_1.InstructorsModule,
+            memberships_module_1.MembershipsModule,
+            reviews_module_1.ReviewsModule,
+            reminders_module_1.RemindersModule,
         ],
-        providers: [{ provide: core_1.APP_GUARD, useClass: throttler_1.ThrottlerGuard }],
+        controllers: [app_controller_1.AppController],
+        providers: [app_service_1.AppService, { provide: core_1.APP_GUARD, useClass: throttler_1.ThrottlerGuard }],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

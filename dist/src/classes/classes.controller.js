@@ -18,6 +18,8 @@ const throttler_1 = require("@nestjs/throttler");
 const classes_service_1 = require("./classes.service");
 const create_class_dto_1 = require("./dto/create-class.dto");
 const create_booking_dto_1 = require("./dto/create-booking.dto");
+const create_waitlist_dto_1 = require("./dto/create-waitlist.dto");
+const transfer_booking_dto_1 = require("./dto/transfer-booking.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const optional_user_jwt_guard_1 = require("../users/guards/optional-user-jwt.guard");
 let ClassesController = class ClassesController {
@@ -48,6 +50,21 @@ let ClassesController = class ClassesController {
     }
     confirmBooking(id) {
         return this.classesService.confirmBooking(id);
+    }
+    transferBooking(id, dto) {
+        return this.classesService.transferBooking(id, dto.newClassScheduleId);
+    }
+    markAttendance(id, attended) {
+        return this.classesService.markAttendance(id, attended);
+    }
+    joinWaitlist(dto) {
+        return this.classesService.joinWaitlist(dto);
+    }
+    findWaitlist(classId) {
+        return this.classesService.findWaitlist(classId ? Number(classId) : undefined);
+    }
+    removeFromWaitlist(id) {
+        return this.classesService.removeFromWaitlist(id);
     }
     deleteClass(id) {
         return this.classesService.deleteClass(id);
@@ -119,6 +136,49 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], ClassesController.prototype, "confirmBooking", null);
+__decorate([
+    (0, common_1.UseGuards)(optional_user_jwt_guard_1.OptionalUserJwtGuard),
+    (0, common_1.Patch)('bookings/:id/transfer'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, transfer_booking_dto_1.TransferBookingDto]),
+    __metadata("design:returntype", void 0)
+], ClassesController.prototype, "transferBooking", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)('bookings/:id/attendance'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)('attended')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Boolean]),
+    __metadata("design:returntype", void 0)
+], ClassesController.prototype, "markAttendance", null);
+__decorate([
+    (0, throttler_1.Throttle)({ default: { ttl: 60_000, limit: 5 } }),
+    (0, common_1.UseGuards)(optional_user_jwt_guard_1.OptionalUserJwtGuard),
+    (0, common_1.Post)('waitlist'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_waitlist_dto_1.CreateWaitlistDto]),
+    __metadata("design:returntype", void 0)
+], ClassesController.prototype, "joinWaitlist", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('waitlist/all'),
+    __param(0, (0, common_1.Query)('classId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ClassesController.prototype, "findWaitlist", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)('waitlist/:id/remove'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], ClassesController.prototype, "removeFromWaitlist", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),

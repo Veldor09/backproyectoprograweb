@@ -2,11 +2,15 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { AdminRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
+import { CreateAdminDto } from './dto/create-admin.dto';
 
 @Injectable()
 export class AuthService {
@@ -24,10 +28,14 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    const token = this.jwtService.sign({ sub: admin.id, email: admin.email });
+    const token = this.jwtService.sign({
+      sub: admin.id,
+      email: admin.email,
+      role: admin.role,
+    });
     return {
       access_token: token,
-      admin: { id: admin.id, email: admin.email, name: admin.name },
+      admin: { id: admin.id, email: admin.email, name: admin.name, role: admin.role },
     };
   }
 
@@ -44,10 +52,60 @@ export class AuthService {
   }
 
   async getMe(adminId: number) {
-    const admin = await this.prisma.admin.findUniqueOrThrow({
+    return this.prisma.admin.findUniqueOrThrow({
       where: { id: adminId },
-      select: { id: true, email: true, name: true, createdAt: true },
+      select: { id: true, email: true, name: true, role: true, createdAt: true },
     });
-    return admin;
+  }
+
+  // ── Gestión de admins ─────────────────────────────────────────────────────
+  listAdmins() {
+    return this.prisma.admin.findMany({
+      select: { id: true, name: true, email: true, role: true, createdAt: true },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  async createAdmin(dto: CreateAdminDto, requesterId: number) {
+    // Solo SUPER_ADMIN puede crear admins
+    const requester = await this.prisma.admin.findUniqueOrThrow({ where: { id: requesterId } });
+    if (requester.role !== AdminRole.SUPER_ADMIN) {
+      throw new ForbiddenException('Solo el super-admin puede crear nuevos administradores.');
+    }
+
+    const exists = await this.prisma.admin.findUnique({ where: { email: dto.email } });
+    if (exists) throw new ConflictException('Ya existe un admin con ese email.');
+
+    const hashed = await bcrypt.hash(dto.password, 10);
+    const admin = await this.prisma.admin.create({
+      data: { name: dto.name, email: dto.email, password: hashed, role: dto.role ?? AdminRole.ADMIN },
+    });
+    return { id: admin.id, name: admin.name, email: admin.email, role: admin.role };
+  }
+
+  async removeAdmin(targetId: number, requesterId: number) {
+    if (targetId === requesterId) {
+      throw new ForbiddenException('No puedes eliminarte a ti mismo.');
+    }
+    const requester = await this.prisma.admin.findUniqueOrThrow({ where: { id: requesterId } });
+    if (requester.role !== AdminRole.SUPER_ADMIN) {
+      throw new ForbiddenException('Solo el super-admin puede eliminar administradores.');
+    }
+    const target = await this.prisma.admin.findUnique({ where: { id: targetId } });
+    if (!target) throw new NotFoundException('Admin no encontrado.');
+    await this.prisma.admin.delete({ where: { id: targetId } });
+    return { message: 'Admin eliminado.' };
+  }
+
+  async updateAdminRole(targetId: number, role: AdminRole, requesterId: number) {
+    const requester = await this.prisma.admin.findUniqueOrThrow({ where: { id: requesterId } });
+    if (requester.role !== AdminRole.SUPER_ADMIN) {
+      throw new ForbiddenException('Solo el super-admin puede cambiar roles.');
+    }
+    return this.prisma.admin.update({
+      where: { id: targetId },
+      data: { role },
+      select: { id: true, name: true, email: true, role: true },
+    });
   }
 }

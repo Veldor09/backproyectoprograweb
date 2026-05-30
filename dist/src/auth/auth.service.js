@@ -46,6 +46,7 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcryptjs"));
+const client_1 = require("@prisma/client");
 const prisma_service_1 = require("../prisma/prisma.service");
 let AuthService = class AuthService {
     prisma;
@@ -61,10 +62,14 @@ let AuthService = class AuthService {
         if (!admin || !(await bcrypt.compare(dto.password, admin.password))) {
             throw new common_1.UnauthorizedException('Credenciales inválidas');
         }
-        const token = this.jwtService.sign({ sub: admin.id, email: admin.email });
+        const token = this.jwtService.sign({
+            sub: admin.id,
+            email: admin.email,
+            role: admin.role,
+        });
         return {
             access_token: token,
-            admin: { id: admin.id, email: admin.email, name: admin.name },
+            admin: { id: admin.id, email: admin.email, name: admin.name, role: admin.role },
         };
     }
     async seedAdmin(email, password, name) {
@@ -78,11 +83,55 @@ let AuthService = class AuthService {
         return { id: admin.id, email: admin.email, name: admin.name };
     }
     async getMe(adminId) {
-        const admin = await this.prisma.admin.findUniqueOrThrow({
+        return this.prisma.admin.findUniqueOrThrow({
             where: { id: adminId },
-            select: { id: true, email: true, name: true, createdAt: true },
+            select: { id: true, email: true, name: true, role: true, createdAt: true },
         });
-        return admin;
+    }
+    listAdmins() {
+        return this.prisma.admin.findMany({
+            select: { id: true, name: true, email: true, role: true, createdAt: true },
+            orderBy: { createdAt: 'asc' },
+        });
+    }
+    async createAdmin(dto, requesterId) {
+        const requester = await this.prisma.admin.findUniqueOrThrow({ where: { id: requesterId } });
+        if (requester.role !== client_1.AdminRole.SUPER_ADMIN) {
+            throw new common_1.ForbiddenException('Solo el super-admin puede crear nuevos administradores.');
+        }
+        const exists = await this.prisma.admin.findUnique({ where: { email: dto.email } });
+        if (exists)
+            throw new common_1.ConflictException('Ya existe un admin con ese email.');
+        const hashed = await bcrypt.hash(dto.password, 10);
+        const admin = await this.prisma.admin.create({
+            data: { name: dto.name, email: dto.email, password: hashed, role: dto.role ?? client_1.AdminRole.ADMIN },
+        });
+        return { id: admin.id, name: admin.name, email: admin.email, role: admin.role };
+    }
+    async removeAdmin(targetId, requesterId) {
+        if (targetId === requesterId) {
+            throw new common_1.ForbiddenException('No puedes eliminarte a ti mismo.');
+        }
+        const requester = await this.prisma.admin.findUniqueOrThrow({ where: { id: requesterId } });
+        if (requester.role !== client_1.AdminRole.SUPER_ADMIN) {
+            throw new common_1.ForbiddenException('Solo el super-admin puede eliminar administradores.');
+        }
+        const target = await this.prisma.admin.findUnique({ where: { id: targetId } });
+        if (!target)
+            throw new common_1.NotFoundException('Admin no encontrado.');
+        await this.prisma.admin.delete({ where: { id: targetId } });
+        return { message: 'Admin eliminado.' };
+    }
+    async updateAdminRole(targetId, role, requesterId) {
+        const requester = await this.prisma.admin.findUniqueOrThrow({ where: { id: requesterId } });
+        if (requester.role !== client_1.AdminRole.SUPER_ADMIN) {
+            throw new common_1.ForbiddenException('Solo el super-admin puede cambiar roles.');
+        }
+        return this.prisma.admin.update({
+            where: { id: targetId },
+            data: { role },
+            select: { id: true, name: true, email: true, role: true },
+        });
     }
 };
 exports.AuthService = AuthService;
