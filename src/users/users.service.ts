@@ -101,6 +101,13 @@ export class UsersService {
     return this.prisma.userProgress.delete({ where: { id: entryId } });
   }
 
+  listAll() {
+    return this.prisma.user.findMany({
+      select: { id: true, name: true, email: true, phone: true },
+      orderBy: { name: 'asc' },
+    });
+  }
+
   async forgotPassword(email: string): Promise<void> {
     const user = await this.prisma.user.findUnique({ where: { email } });
 

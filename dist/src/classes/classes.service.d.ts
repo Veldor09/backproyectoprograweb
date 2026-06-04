@@ -8,70 +8,70 @@ export declare class ClassesService {
     private email;
     constructor(prisma: PrismaService, email: EmailService);
     createClass(dto: CreateClassDto): import("@prisma/client").Prisma.Prisma__ClassScheduleClient<{
+        id: number;
         name: string;
-        description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         instructor: string;
+        description: string | null;
         dayOfWeek: number;
         startTime: string;
         endTime: string;
         capacity: number;
         isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     findAllClasses(activeOnly?: boolean): import("@prisma/client").Prisma.PrismaPromise<({
         _count: {
             bookings: number;
         };
     } & {
+        id: number;
         name: string;
-        description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         instructor: string;
+        description: string | null;
         dayOfWeek: number;
         startTime: string;
         endTime: string;
         capacity: number;
         isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
     })[]>;
     findOneClass(id: number): import("@prisma/client").Prisma.Prisma__ClassScheduleClient<{
+        id: number;
         name: string;
-        description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         instructor: string;
+        description: string | null;
         dayOfWeek: number;
         startTime: string;
         endTime: string;
         capacity: number;
         isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     updateClass(id: number, dto: Partial<CreateClassDto>): import("@prisma/client").Prisma.Prisma__ClassScheduleClient<{
+        id: number;
         name: string;
-        description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         instructor: string;
+        description: string | null;
         dayOfWeek: number;
         startTime: string;
         endTime: string;
         capacity: number;
         isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     createBooking(dto: CreateBookingDto, userId?: number): Promise<{
+        id: number;
+        email: string | null;
         name: string;
         createdAt: Date;
-        id: number;
         phone: string;
-        email: string | null;
+        status: import("@prisma/client").$Enums.BookingStatus;
         classScheduleId: number;
         userId: number | null;
-        status: import("@prisma/client").$Enums.BookingStatus;
         attended: boolean | null;
     }>;
     findBookings(classScheduleId?: number): import("@prisma/client").Prisma.PrismaPromise<({
@@ -82,60 +82,60 @@ export declare class ClassesService {
             endTime: string;
         };
     } & {
+        id: number;
+        email: string | null;
         name: string;
         createdAt: Date;
-        id: number;
         phone: string;
-        email: string | null;
+        status: import("@prisma/client").$Enums.BookingStatus;
         classScheduleId: number;
         userId: number | null;
-        status: import("@prisma/client").$Enums.BookingStatus;
         attended: boolean | null;
     })[]>;
     cancelBooking(id: number): Promise<{
         classSchedule: {
+            id: number;
             name: string;
-            description: string | null;
+            createdAt: Date;
+            updatedAt: Date;
             instructor: string;
+            description: string | null;
             dayOfWeek: number;
             startTime: string;
             endTime: string;
             capacity: number;
             isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            id: number;
         };
     } & {
+        id: number;
+        email: string | null;
         name: string;
         createdAt: Date;
-        id: number;
         phone: string;
-        email: string | null;
+        status: import("@prisma/client").$Enums.BookingStatus;
         classScheduleId: number;
         userId: number | null;
-        status: import("@prisma/client").$Enums.BookingStatus;
         attended: boolean | null;
     }>;
     markAttendance(id: number, attended: boolean): import("@prisma/client").Prisma.Prisma__BookingClient<{
+        id: number;
+        email: string | null;
         name: string;
         createdAt: Date;
-        id: number;
         phone: string;
-        email: string | null;
+        status: import("@prisma/client").$Enums.BookingStatus;
         classScheduleId: number;
         userId: number | null;
-        status: import("@prisma/client").$Enums.BookingStatus;
         attended: boolean | null;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     joinWaitlist(dto: CreateWaitlistDto): Promise<{
+        id: number;
+        email: string | null;
         name: string;
         createdAt: Date;
-        id: number;
         phone: string;
-        email: string | null;
-        classScheduleId: number;
         status: import("@prisma/client").$Enums.WaitlistStatus;
+        classScheduleId: number;
         notifiedAt: Date | null;
     }>;
     findWaitlist(classScheduleId?: number): import("@prisma/client").Prisma.PrismaPromise<({
@@ -145,13 +145,13 @@ export declare class ClassesService {
             startTime: string;
         };
     } & {
+        id: number;
+        email: string | null;
         name: string;
         createdAt: Date;
-        id: number;
         phone: string;
-        email: string | null;
-        classScheduleId: number;
         status: import("@prisma/client").$Enums.WaitlistStatus;
+        classScheduleId: number;
         notifiedAt: Date | null;
     })[]>;
     transferBooking(bookingId: number, newClassScheduleId: number): Promise<{
@@ -162,49 +162,49 @@ export declare class ClassesService {
             endTime: string;
         };
     } & {
+        id: number;
+        email: string | null;
         name: string;
         createdAt: Date;
-        id: number;
         phone: string;
-        email: string | null;
+        status: import("@prisma/client").$Enums.BookingStatus;
         classScheduleId: number;
         userId: number | null;
-        status: import("@prisma/client").$Enums.BookingStatus;
         attended: boolean | null;
     }>;
     removeFromWaitlist(id: number): import("@prisma/client").Prisma.Prisma__WaitlistEntryClient<{
+        id: number;
+        email: string | null;
         name: string;
         createdAt: Date;
-        id: number;
         phone: string;
-        email: string | null;
-        classScheduleId: number;
         status: import("@prisma/client").$Enums.WaitlistStatus;
+        classScheduleId: number;
         notifiedAt: Date | null;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     private notifyNextWaiting;
     confirmBooking(id: number): import("@prisma/client").Prisma.Prisma__BookingClient<{
+        id: number;
+        email: string | null;
         name: string;
         createdAt: Date;
-        id: number;
         phone: string;
-        email: string | null;
+        status: import("@prisma/client").$Enums.BookingStatus;
         classScheduleId: number;
         userId: number | null;
-        status: import("@prisma/client").$Enums.BookingStatus;
         attended: boolean | null;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     deleteClass(id: number): Promise<{
+        id: number;
         name: string;
-        description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         instructor: string;
+        description: string | null;
         dayOfWeek: number;
         startTime: string;
         endTime: string;
         capacity: number;
         isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        id: number;
     }>;
 }

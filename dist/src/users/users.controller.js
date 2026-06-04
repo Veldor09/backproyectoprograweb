@@ -23,10 +23,14 @@ const forgot_password_dto_1 = require("./dto/forgot-password.dto");
 const reset_password_dto_1 = require("./dto/reset-password.dto");
 const create_progress_dto_1 = require("./dto/create-progress.dto");
 const user_jwt_guard_1 = require("./guards/user-jwt.guard");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let UsersController = class UsersController {
     usersService;
     constructor(usersService) {
         this.usersService = usersService;
+    }
+    listAll() {
+        return this.usersService.listAll();
     }
     register(dto) {
         return this.usersService.register(dto);
@@ -64,6 +68,13 @@ let UsersController = class UsersController {
     }
 };
 exports.UsersController = UsersController;
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "listAll", null);
 __decorate([
     (0, throttler_1.Throttle)({ default: { ttl: 60_000, limit: 3 } }),
     (0, common_1.Post)('register'),

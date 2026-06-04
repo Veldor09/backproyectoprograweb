@@ -8,6 +8,12 @@ import { CreateProgressDto } from './dto/create-progress.dto';
 export declare class UsersController {
     private usersService;
     constructor(usersService: UsersService);
+    listAll(): import("@prisma/client").Prisma.PrismaPromise<{
+        id: number;
+        name: string;
+        email: string;
+        phone: string;
+    }[]>;
     register(dto: RegisterUserDto): Promise<{
         access_token: string;
         user: {
@@ -54,11 +60,11 @@ export declare class UsersController {
             endTime: string;
         };
     } & {
-        name: string;
-        createdAt: Date;
         id: number;
-        phone: string;
+        name: string;
         email: string | null;
+        phone: string;
+        createdAt: Date;
         classScheduleId: number;
         userId: number | null;
         status: import("@prisma/client").$Enums.BookingStatus;
@@ -69,20 +75,20 @@ export declare class UsersController {
             id: number;
         };
     }, dto: UpdateUserDto): Promise<{
-        name: string;
         id: number;
-        phone: string;
+        name: string;
         email: string;
+        phone: string;
     }>;
     getProgress(req: {
         user: {
             id: number;
         };
     }): import("@prisma/client").Prisma.PrismaPromise<{
-        date: Date;
-        createdAt: Date;
         id: number;
+        createdAt: Date;
         userId: number;
+        date: Date;
         category: import("@prisma/client").$Enums.ProgressCategory;
         weight: number | null;
         reps: number | null;
@@ -93,10 +99,10 @@ export declare class UsersController {
             id: number;
         };
     }, dto: CreateProgressDto): import("@prisma/client").Prisma.Prisma__UserProgressClient<{
-        date: Date;
-        createdAt: Date;
         id: number;
+        createdAt: Date;
         userId: number;
+        date: Date;
         category: import("@prisma/client").$Enums.ProgressCategory;
         weight: number | null;
         reps: number | null;
@@ -107,10 +113,10 @@ export declare class UsersController {
             id: number;
         };
     }, id: number): Promise<{
-        date: Date;
-        createdAt: Date;
         id: number;
+        createdAt: Date;
         userId: number;
+        date: Date;
         category: import("@prisma/client").$Enums.ProgressCategory;
         weight: number | null;
         reps: number | null;

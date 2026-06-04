@@ -8,10 +8,17 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { CreateProgressDto } from './dto/create-progress.dto';
 import { UserJwtAuthGuard } from './guards/user-jwt.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  listAll() {
+    return this.usersService.listAll();
+  }
 
   @Throttle({ default: { ttl: 60_000, limit: 3 } })
   @Post('register')

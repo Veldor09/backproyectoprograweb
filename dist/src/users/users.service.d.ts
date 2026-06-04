@@ -38,10 +38,10 @@ export declare class UsersService {
         };
     } & {
         name: string;
+        email: string | null;
+        phone: string;
         createdAt: Date;
         id: number;
-        phone: string;
-        email: string | null;
         classScheduleId: number;
         userId: number | null;
         status: import("@prisma/client").$Enums.BookingStatus;
@@ -49,40 +49,46 @@ export declare class UsersService {
     })[]>;
     updateProfile(userId: number, dto: UpdateUserDto): Promise<{
         name: string;
-        id: number;
-        phone: string;
         email: string;
+        phone: string;
+        id: number;
     }>;
     getProgress(userId: number): import("@prisma/client").Prisma.PrismaPromise<{
-        date: Date;
         createdAt: Date;
         id: number;
         userId: number;
+        date: Date;
         category: import("@prisma/client").$Enums.ProgressCategory;
         weight: number | null;
         reps: number | null;
         notes: string | null;
     }[]>;
     addProgress(userId: number, dto: CreateProgressDto): import("@prisma/client").Prisma.Prisma__UserProgressClient<{
-        date: Date;
         createdAt: Date;
         id: number;
         userId: number;
+        date: Date;
         category: import("@prisma/client").$Enums.ProgressCategory;
         weight: number | null;
         reps: number | null;
         notes: string | null;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     deleteProgress(userId: number, entryId: number): Promise<{
-        date: Date;
         createdAt: Date;
         id: number;
         userId: number;
+        date: Date;
         category: import("@prisma/client").$Enums.ProgressCategory;
         weight: number | null;
         reps: number | null;
         notes: string | null;
     }>;
+    listAll(): import("@prisma/client").Prisma.PrismaPromise<{
+        name: string;
+        email: string;
+        phone: string;
+        id: number;
+    }[]>;
     forgotPassword(email: string): Promise<void>;
     resetPassword(token: string, newPassword: string): Promise<void>;
     private signToken;
