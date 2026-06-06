@@ -37,57 +37,57 @@ export declare class UsersService {
             endTime: string;
         };
     } & {
-        name: string;
-        email: string | null;
-        phone: string;
-        createdAt: Date;
         id: number;
+        email: string | null;
+        name: string;
+        createdAt: Date;
+        phone: string;
+        status: import("@prisma/client").$Enums.BookingStatus;
         classScheduleId: number;
         userId: number | null;
-        status: import("@prisma/client").$Enums.BookingStatus;
         attended: boolean | null;
     })[]>;
     updateProfile(userId: number, dto: UpdateUserDto): Promise<{
-        name: string;
-        email: string;
-        phone: string;
         id: number;
+        email: string;
+        name: string;
+        phone: string;
     }>;
     getProgress(userId: number): import("@prisma/client").Prisma.PrismaPromise<{
-        createdAt: Date;
         id: number;
-        userId: number;
+        createdAt: Date;
+        notes: string | null;
         date: Date;
+        userId: number;
         category: import("@prisma/client").$Enums.ProgressCategory;
         weight: number | null;
         reps: number | null;
-        notes: string | null;
     }[]>;
     addProgress(userId: number, dto: CreateProgressDto): import("@prisma/client").Prisma.Prisma__UserProgressClient<{
-        createdAt: Date;
         id: number;
-        userId: number;
+        createdAt: Date;
+        notes: string | null;
         date: Date;
+        userId: number;
         category: import("@prisma/client").$Enums.ProgressCategory;
         weight: number | null;
         reps: number | null;
-        notes: string | null;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     deleteProgress(userId: number, entryId: number): Promise<{
-        createdAt: Date;
         id: number;
-        userId: number;
+        createdAt: Date;
+        notes: string | null;
         date: Date;
+        userId: number;
         category: import("@prisma/client").$Enums.ProgressCategory;
         weight: number | null;
         reps: number | null;
-        notes: string | null;
     }>;
     listAll(): import("@prisma/client").Prisma.PrismaPromise<{
-        name: string;
-        email: string;
-        phone: string;
         id: number;
+        email: string;
+        name: string;
+        phone: string;
     }[]>;
     forgotPassword(email: string): Promise<void>;
     resetPassword(token: string, newPassword: string): Promise<void>;

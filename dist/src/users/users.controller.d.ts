@@ -10,8 +10,8 @@ export declare class UsersController {
     constructor(usersService: UsersService);
     listAll(): import("@prisma/client").Prisma.PrismaPromise<{
         id: number;
-        name: string;
         email: string;
+        name: string;
         phone: string;
     }[]>;
     register(dto: RegisterUserDto): Promise<{
@@ -61,13 +61,13 @@ export declare class UsersController {
         };
     } & {
         id: number;
-        name: string;
         email: string | null;
-        phone: string;
+        name: string;
         createdAt: Date;
+        phone: string;
+        status: import("@prisma/client").$Enums.BookingStatus;
         classScheduleId: number;
         userId: number | null;
-        status: import("@prisma/client").$Enums.BookingStatus;
         attended: boolean | null;
     })[]>;
     updateProfile(req: {
@@ -76,8 +76,8 @@ export declare class UsersController {
         };
     }, dto: UpdateUserDto): Promise<{
         id: number;
-        name: string;
         email: string;
+        name: string;
         phone: string;
     }>;
     getProgress(req: {
@@ -87,12 +87,12 @@ export declare class UsersController {
     }): import("@prisma/client").Prisma.PrismaPromise<{
         id: number;
         createdAt: Date;
-        userId: number;
+        notes: string | null;
         date: Date;
+        userId: number;
         category: import("@prisma/client").$Enums.ProgressCategory;
         weight: number | null;
         reps: number | null;
-        notes: string | null;
     }[]>;
     addProgress(req: {
         user: {
@@ -101,12 +101,12 @@ export declare class UsersController {
     }, dto: CreateProgressDto): import("@prisma/client").Prisma.Prisma__UserProgressClient<{
         id: number;
         createdAt: Date;
-        userId: number;
+        notes: string | null;
         date: Date;
+        userId: number;
         category: import("@prisma/client").$Enums.ProgressCategory;
         weight: number | null;
         reps: number | null;
-        notes: string | null;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     deleteProgress(req: {
         user: {
@@ -115,11 +115,11 @@ export declare class UsersController {
     }, id: number): Promise<{
         id: number;
         createdAt: Date;
-        userId: number;
+        notes: string | null;
         date: Date;
+        userId: number;
         category: import("@prisma/client").$Enums.ProgressCategory;
         weight: number | null;
         reps: number | null;
-        notes: string | null;
     }>;
 }
